@@ -1,0 +1,63 @@
+{{#paper-toolbar accent=true as |toolbar|}}
+    {{#toolbar.tools}}
+        <h2>Trial Results</h2>
+        <span class="flex"></span>
+    {{/toolbar.tools}}
+{{/paper-toolbar}}
+<div class="flex layout-row">
+    <span class="flex-20 layout-column user-input">
+        {{paper-input label="Trials" value=numTrials onChange=(action (mut numTrials))}}
+        {{paper-input label="Iterations" value=iterations onChange=(action (mut iterations))}}
+        {{paper-input label="Ensemble" value=ensemble onChange=(action (mut ensemble))}}
+        {{paper-input label="Memory" value=n onChange=(action (mut n))}}
+        {{!-- {{paper-input label="Weights" value=teacher onChange=(action (mut teacher))}} --}}
+        {{#paper-select
+        disabled=false
+        label=""
+        options=types
+        selected=selectedType
+        onChange=(action (mut selectedType))
+        as |type|}}
+            {{type}}
+        {{/paper-select}}
+        {{#paper-checkbox value=fastMode onChange=(action (mut fastMode))}}
+            No Animate
+        {{/paper-checkbox}}
+        {{#paper-button class="go-button" primary=true raised=true onClick=(action "doTrials" selectedType)}}
+            Run Trials
+        {{/paper-button}}
+        <span class="flex"></span>
+    </span>
+    <div class="flex-80">
+        {{#if (gt trackers.length 0)}}
+            {{#paper-item class="md-2-line card"}}
+                        <div class="md-list-item-text">
+                            {{paper-progress-linear value=tracker.progress}}
+                            <h3>{{results}}</h3>
+                            <h3>Iterations: {{tracker.history.length}}</h3>
+                            <p>{{tracker.state}}</p>
+                            {{#each-in tracker.results as |res i|}}
+                                {{add res 1}}: {{floor (mult (div i ensemble) 100)}}%
+                            {{/each-in}}
+                        </div>
+                    {{/paper-item}}
+            {{#paper-list}}
+                {{#each trackers as |tracker|}}
+                    {{#paper-item class="md-2-line card"}}
+                        <div class="md-list-item-text">
+                            {{paper-progress-linear value=tracker.progress}}
+                            <h3>ID: {{tracker.id}}</h3>
+                            <h3>Iterations: {{tracker.history.length}}</h3>
+                            <p>{{tracker.state}}</p>
+                            {{#each-in tracker.results as |res i|}}
+                                {{add res 1}}: {{floor (mult (div i ensemble) 100)}}%
+                            {{/each-in}}
+                        </div>
+                    {{/paper-item}}
+                {{/each}}
+            {{/paper-list}}
+        {{else}}
+            <h3 class="flex empty-list">No Trials</h3>
+        {{/if}}
+    </div>
+</div>

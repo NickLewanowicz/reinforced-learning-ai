@@ -1,0 +1,46 @@
+@import 'ember-paper';
+
+
+.items {
+    padding: 10px;
+}
+
+.empty-list {
+    width: 100%;
+    text-align: center;
+}
+
+.select-box {
+    padding-top: 22px;
+}
+
+.user-input {
+    display: flex;
+    align-content: center;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.go-button {
+    width: 80%;
+    margin: 0px 30px 30px 30px;
+}
+
+.card {
+    /* Add shadows to create the "card" effect */
+    margin: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+/* Add some padding inside the card container */
+.container {
+    padding: 2px 16px;
+}
