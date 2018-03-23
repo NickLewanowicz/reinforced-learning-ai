@@ -147,7 +147,7 @@ export default Controller.extend({
         let results = this.get('results')
         for (var property in res) {
             if (object.hasOwnProperty(property)) {
-                results[property] ? 
+                //results[property] ? 
             }
         }
 

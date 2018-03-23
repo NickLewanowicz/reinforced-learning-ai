@@ -5,7 +5,7 @@ module.exports = function(environment) {
     modulePrefix: 'reinforcement-learning-ai',
     podModulePrefix: 'reinforcement-learning-ai/pods',
     environment,
-    rootURL: '/',
+    rootURL: '/reinforced-learning-ai/',
     locationType: 'auto',
     EmberENV: {
       FEATURES: {
