@@ -82,7 +82,7 @@ export default Controller.extend({
             }
         }
         tracker.set('results', results);
-        this.updateRes(results)
+        //this.updateRes(results)
         yield timeout(1)
         return tracker;
     }).enqueue().maxConcurrency(10),
