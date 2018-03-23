@@ -3,7 +3,7 @@
 module.exports = function(environment) {
   let ENV = {
     modulePrefix: 'reinforcement-learning-ai',
-    podModulePrefix: 'reinforcement-learning-ai/pods',
+    podModulePrefix: 'reinforced-learning-ai/pods',
     environment,
     rootURL: '/reinforced-learning-ai/',
     locationType: 'auto',
