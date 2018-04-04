@@ -21,7 +21,16 @@ export default Controller.extend({
     position: 0,
     status: "",
     types: ["tsetlin","krinsky","krylov","lri"],
+    chartTypes: ["bar","polarArea","pie"],
     selectedType: "tsetlin",
+    chartType: "polarArea",
+    chartOptions: {
+        scales: {
+            yAxes:[{
+                type: 'logarithmic'
+            }]
+        }
+    },
     iterations: 15000,
     ensemble: 5000,
     numTrials: 10,
@@ -31,9 +40,9 @@ export default Controller.extend({
     dishCoords: "150 160,250 160,200 200",
     results: {},
     fsmTask: task(function * (testType) {
+        let allDone = all;
         let trackers = [], childTasks = [];
         let numTrials = this.get('numTrials')
-        let results = this.get('results')
         for(let i = 0; i < numTrials; i++){
             let tracker = TrialTracker.create({ id: testType + '_' + i, type: testType })
 
@@ -42,21 +51,35 @@ export default Controller.extend({
         }
 
         this.set('trackers', trackers)
-        this.set('status', "Waiting for child tasks to complete...");
-        let trials = all(childTasks)
-        console.log(trials)
-        this.set('status', trials)
+        this.set('status', "Waiting for trials to complete...");
+        let trials = yield all(childTasks)
+        this.set('status', 'Complete! The results are...')
+        let x = {}
+        for (let i = 0; i< numTrials; i++) {
+            for (let r in trials.results){
+                x[r] = x[r] ? trials[i][r] + x[r] : trials[i][r] 
+            }
+
+        }
     }),
     trialTask: task(function * (tracker) {
         let fastMode = this.get('fastMode')
         let history = [this.get('n')]
         let iterations = this.get('iterations')
         let ensemble = this.get('ensemble')
+        let n = this.get('n')
         let results = {}
+        let lriWeights = [0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125]
         while (history.length < iterations) {
             let state = history[history.length-1]
-            let action = Math.ceil(state/this.get('n'))-1
+            let action = Math.ceil(state/n)-1
+            if(Math.ceil(state/n)-1 > NUM_ACTIONS-1){
+                debugger
+            }
             let signal = this.askTeacher(action)
+            if(isNaN(signal)){
+                debugger
+            }
             tracker.set('sum', tracker.get('sum') + signal)
             let average = tracker.sum/history.length
             if(tracker.type == 'tsetlin'){
@@ -66,7 +89,17 @@ export default Controller.extend({
             }else if(tracker.type == 'krylov'){
                 state = this.krylov(state, signal > average)
             }else if(tracker.type == 'lri'){
-                state = this.lri(state, signal > average)
+                if(signal > average){
+                    let sum = 1
+                    for(let i = 0; i<lriWeights.length; i++){
+                        if(i != action){
+                            lriWeights[i] = lriWeights[i]*0.9
+                            sum = sum - lriWeights[i]
+                        }
+                    }
+                    lriWeights[action] = sum
+                }
+                state = this.lri(lriWeights, state, signal > average)
             }
 
             history = (tracker.history).concat([state])
@@ -81,12 +114,17 @@ export default Controller.extend({
                 yield timeout(1)
             }
         }
+
         tracker.set('results', results);
-        //this.updateRes(results)
+        let x = this.get('results')
+        for(let j in results){
+            results[j] = x[j] ? x[j] + results[j] : results[j] 
+        }
+        this.set('results', results)
         yield timeout(1)
         return tracker;
     }).enqueue().maxConcurrency(10),
-
+    
     tsetlin (state, reward) {
         let n = this.get('n')
         if(reward){
@@ -124,7 +162,7 @@ export default Controller.extend({
     krylov (state, reward) {
         let n = this.get('n')
         if(reward || Math.random() >= 0.5){
-            if(state%n != 1){
+            if(state%n > 1){
                 return state - (state%n - 1)
             }else {
                 return state 
@@ -138,6 +176,18 @@ export default Controller.extend({
         }
     },
 
+    lri (weights, action, reward) {
+        let n = this.get('n')
+        let x = Math.random()
+        let total = 0
+        for(let i = 0; i<weights.length; i++){
+            total += weights[i]
+            if(x < total){
+                return i*n +1
+            }
+        }
+    },
+
     askTeacher (action) {
         let weights = this.get('teacher')
         return ((3*weights[action])/2) + this.randn_bm();
@@ -146,12 +196,39 @@ export default Controller.extend({
     updateRes (res) {
         let results = this.get('results')
         for (var property in res) {
-            if (object.hasOwnProperty(property)) {
-                //results[property] ? 
-            }
+            results[property] = results[property] ? results[property] + res[property] : res[property]
         }
-
+        this.set('results',results)
     },
+
+    resultsData: computed('results.[0]', function(){
+        let results = this.get('results')
+        let datasets = {
+            label: "Frequency of direction", 
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            data:[]
+        }
+        let labels = []
+        if(Object.keys(results).length < 1){
+            return null
+        }
+        datasets.labels = []
+        for(let i in results){
+            labels.push(i)
+            datasets.data.push(results[i])
+        }
+        return {
+            labels,
+            datasets: [datasets]
+        }
+    }),
 
     updateDish (pos) {
         switch(pos) {

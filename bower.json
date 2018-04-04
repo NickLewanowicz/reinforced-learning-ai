@@ -1,0 +1,6 @@
+{
+  "name": "reinforcement-learning-ai",
+  "dependencies": {
+    "chartjs": "2.1.6"
+  }
+}
