@@ -1,16 +1,12 @@
 # reinforcement-learning-ai
 
-This README outlines the details of collaborating on this Ember application.
-A short introduction of this app could easily go here.
+This web app initializes a finite state machine (for our purposes this is a satelite) which has 8 possible actions with 8 different results. Each of the results can vary due to 'signal noise' which will effect the learning automatas desision making.
 
-## Prerequisites
+Given the finite state machine we have implemented 4 possible learning automata Tsetlin, Krinsky, Krylov, and LRI. Also nearly all relevant options have been exposed to the user to configure like trials, iterations, ensamble, signal weights, noise ect. 
 
-You will need the following things properly installed on your computer.
+This app will serve as a learning tool to visualize the difference between the several learning automata and how the various properties of which can have an impact on the learning.
 
-* [Git](https://git-scm.com/)
-* [Node.js](https://nodejs.org/) (with npm)
-* [Ember CLI](https://ember-cli.com/)
-* [Google Chrome](https://google.com/chrome/)
+There is a demo of this application available [here](https://nicklewanowicz.github.io/reinforced-learning-ai/) if you wish to run this locally the below directions will outline how to do so.
 
 ## Installation
 
@@ -24,15 +20,6 @@ You will need the following things properly installed on your computer.
 * Visit your app at [http://localhost:4200](http://localhost:4200).
 * Visit your tests at [http://localhost:4200/tests](http://localhost:4200/tests).
 
-### Code Generators
-
-Make use of the many generators for code, try `ember help generate` for more details
-
-### Running Tests
-
-* `ember test`
-* `ember test --server`
-
 ### Building
 
 * `ember build` (development)
@@ -40,12 +27,9 @@ Make use of the many generators for code, try `ember help generate` for more det
 
 ### Deploying
 
-Specify what it takes to deploy your app.
+If you wish to deploy to gh pages you can do `npm run deploy`
 
 ## Further Reading / Useful Links
 
 * [ember.js](https://emberjs.com/)
-* [ember-cli](https://ember-cli.com/)
-* Development Browser Extensions
-  * [ember inspector for chrome](https://chrome.google.com/webstore/detail/ember-inspector/bmdblncegkenkacieihfhpjfppoconhi)
-  * [ember inspector for firefox](https://addons.mozilla.org/en-US/firefox/addon/ember-inspector/)
+* [learning automata] (https://en.wikipedia.org/wiki/Learning_automata)
