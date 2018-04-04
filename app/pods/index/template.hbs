@@ -61,7 +61,8 @@
             {{ember-chart class="card" type=chartType data=resultsData options=chartOptions width=400 height=400}}
         {{/if}}
         {{#if (gt trackers.length 0)}}
-            {{#paper-list}}
+            {{#paper-list class="trial-container"}}
+                
                 {{#paper-item class="md-2-line card"}}
                         <div class="md-list-item-text">
                             {{paper-progress-linear value=(div (sub trials fsmTask.numQueued) trials)}}
@@ -82,7 +83,7 @@
                             <h3>Iterations: {{tracker.history.length}}</h3>
                             <p>{{tracker.state}}</p>
                             {{#each-in tracker.results as |res i|}}
-                                {{add res 1}}: ({{div (round (mult (div i ensemble) 10000)) 100}}%)
+                                {{add res 1}}: {{i}} ({{div (round (mult (div i ensemble) 10000)) 100}}%)
                             {{/each-in}}
                         </div>
                     {{/paper-item}}
