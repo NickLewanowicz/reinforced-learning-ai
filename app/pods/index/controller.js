@@ -207,7 +207,7 @@ export default Controller.extend({
         }
         let labels = []
         if(Object.keys(results).length < 1){
-            datasets.data = [0,0,0,0,0,0,0,0]
+            datasets.data = []
             labels = [0,1,2,3,4,5,6,7]
         }else{
             for(let i in results){
