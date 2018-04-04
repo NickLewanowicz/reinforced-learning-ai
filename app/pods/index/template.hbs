@@ -31,6 +31,14 @@
         as |type|}}
             {{type}}
         {{/paper-select}}
+        Reward Weights
+        {{#sortable-group tagName="ol" direction="x" onChange="update" as |group|}}
+            {{#each teacher as |item|}}
+            {{#sortable-item class="draggable-item" tagName="li" model=item group=group}}
+                {{item}}
+            {{/sortable-item}}
+            {{/each}}
+        {{/sortable-group}}
         {{#paper-checkbox value=fastMode onChange=(action (mut fastMode))}}
             No Animate
         {{/paper-checkbox}}
@@ -56,7 +64,7 @@
             {{#paper-list}}
                 {{#paper-item class="md-2-line card"}}
                         <div class="md-list-item-text">
-                            {{paper-progress-linear value=tracker.progress}}
+                            {{paper-progress-linear value=(div (sub trials fsmTask.numQueued) trials)}}
                             <h3>Sum of Trials</h3>
                             <h3>Iterations: {{div (mult iterations numTrials) 1000}}k</h3>
                             <p>{{status}}</p>
@@ -74,7 +82,7 @@
                             <h3>Iterations: {{tracker.history.length}}</h3>
                             <p>{{tracker.state}}</p>
                             {{#each-in tracker.results as |res i|}}
-                                {{add res 1}}: {{div (round (mult (div i ensemble) 10000)) 100}}%
+                                {{add res 1}}: ({{div (round (mult (div i ensemble) 10000)) 100}}%)
                             {{/each-in}}
                         </div>
                     {{/paper-item}}

@@ -2,6 +2,7 @@ import Controller from '@ember/controller';
 import { task, timeout, all} from 'ember-concurrency';
 import computed from 'ember-macro-helpers/computed'
 import EmberObject from '@ember/object'
+import { A as a } from '@ember/array';
 
 const NUM_ACTIONS = 8
 
@@ -287,6 +288,10 @@ export default Controller.extend({
         },
         doTrials(mode) {
             this.get('fsmTask').perform(mode)
-        }
+        },
+        update(newOrder, draggedModel) {
+            this.set('teacher', a(newOrder));
+            this.set('dragged', draggedModel);
+          }
     }
 });
