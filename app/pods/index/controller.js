@@ -24,7 +24,8 @@ export default Controller.extend({
     types: ["tsetlin","krinsky","krylov","lri"],
     chartTypes: ["bar","polarArea","pie"],
     selectedType: "tsetlin",
-    chartType: "polarArea",
+    chartType: "bar",
+    noiseMultiplier: 1,
     chartOptions: {
         scales: {
             yAxes:[{
@@ -41,7 +42,7 @@ export default Controller.extend({
     dishCoords: "150 160,250 160,200 200",
     results: {},
     fsmTask: task(function * (testType) {
-        let allDone = all;
+        this.set('results', {})
         let trackers = [], childTasks = [];
         let numTrials = this.get('numTrials')
         for(let i = 0; i < numTrials; i++){
@@ -74,8 +75,8 @@ export default Controller.extend({
         while (history.length < iterations) {
             let state = history[history.length-1]
             let action = Math.ceil(state/n)-1
-            if(Math.ceil(state/n)-1 > NUM_ACTIONS-1){
-                debugger
+            if(action > NUM_ACTIONS-1){
+                action = NUM_ACTIONS*n
             }
             let signal = this.askTeacher(action)
             if(isNaN(signal)){
@@ -115,13 +116,9 @@ export default Controller.extend({
                 yield timeout(1)
             }
         }
-
+        
         tracker.set('results', results);
-        let x = this.get('results')
-        for(let j in results){
-            results[j] = x[j] ? x[j] + results[j] : results[j] 
-        }
-        this.set('results', results)
+        this.set('results', this.sumObjectsByKey(this.get('results'), results))
         yield timeout(1)
         return tracker;
     }).enqueue().maxConcurrency(10),
@@ -191,15 +188,7 @@ export default Controller.extend({
 
     askTeacher (action) {
         let weights = this.get('teacher')
-        return ((3*weights[action])/2) + this.randn_bm();
-    },
-
-    updateRes (res) {
-        let results = this.get('results')
-        for (var property in res) {
-            results[property] = results[property] ? results[property] + res[property] : res[property]
-        }
-        this.set('results',results)
+        return ((3*weights[action])/2) + (this.randn_bm() * this.get('noiseMultiplier'));
     },
 
     resultsData: computed('results.[0]', function(){
@@ -218,13 +207,16 @@ export default Controller.extend({
         }
         let labels = []
         if(Object.keys(results).length < 1){
-            return null
+            datasets.data = [0,0,0,0,0,0,0,0]
+            labels = [0,1,2,3,4,5,6,7]
+        }else{
+            for(let i in results){
+                labels.push(i)
+                datasets.data.push(results[i])
+            }
         }
         datasets.labels = []
-        for(let i in results){
-            labels.push(i)
-            datasets.data.push(results[i])
-        }
+        
         return {
             labels,
             datasets: [datasets]
@@ -278,6 +270,16 @@ export default Controller.extend({
             a[j] = x;
         }
         return a
+    },
+
+    sumObjectsByKey(...objs) {
+        return objs.reduce((a, b) => {
+          for (let k in b) {
+            if (b.hasOwnProperty(k))
+              a[k] = (a[k] || 0) + b[k];
+          }
+          return a;
+        }, {});
     },
 
     actions: {

@@ -17,6 +17,8 @@
         {{paper-slider type="number" label="Ensemble" class="flex" min=1 max=10000 value=ensemble onChange=(action (mut ensemble))}}
         Memory: {{n}}
         {{paper-slider type="number" label="Memory" class="flex" min=2 max=10 value=n onChange=(action (mut n))}}
+        Noise multiplier: {{noiseMultiplier}}
+        {{paper-slider type="decimal" label="Memory" class="flex" min=0 max=5 value=noiseMultiplier onChange=(action (mut noiseMultiplier))}}
         {{!-- {{paper-input type="number" label="Trials" value=numTrials onChange=(action (mut numTrials))}}
         {{paper-input type="number" label="Iterations" value=iterations onChange=(action (mut iterations))}}
         {{paper-input type="number" label="Ensemble" value=ensemble onChange=(action (mut ensemble))}}
